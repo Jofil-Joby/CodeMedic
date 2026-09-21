@@ -1,48 +1,133 @@
 # CodeMedic
 
-> Portable agent for identifying obvious debug-output patterns in source code.
+> A portable engineering agent for **source-code hygiene**.
 
-## What it does
+CodeMedic inspects observable project evidence, detects **debug output patterns**, and produces an explainable improvement plan. Its purpose is not to replace specialist tooling. It provides a focused, auditable diagnostic layer that can travel across agent runtimes.
 
-CodeMedic scans project source for recognizable debug-print patterns such as `console.log(...)` and debug-style Python prints. It converts those observations into a focused maintainability recommendation.
+## What makes it different
 
-### Diagnostic fingerprint
-
-**Source pattern → maintainability signal → evidence → cleanup action**
-
-## Why this agent is distinct
-
-CodeMedic is intentionally not a full static-analysis platform. It focuses on one easy-to-understand signal that often survives into production code and makes the project's intent harder to read.
-
-## Workflow
+This project follows an **evidence → decision → explanation** model:
 
 ```text
-Source files
-    ↓
-Pattern scanner
-    ↓
-Debug-output rule
-    ↓
-Observed evidence
-    ↓
-Cleanup recommendation
+Project
+  ↓
+Scanner
+  ↓
+Domain Evidence
+  ↓
+Deterministic Diagnostic Rule
+  ↓
+Finding + Evidence + Confidence
+  ↓
+Improvement Plan
 ```
+
+The agent does not invent evidence. A finding is tied to what the scanner can actually observe.
+
+## Diagnostic contract
+
+| Layer | CodeMedic behavior |
+| --- | --- |
+| Domain | source-code hygiene |
+| Primary signal | console.log / debug print patterns |
+| Remediation | Remove or replace debug output |
+| Output | Structured, explainable findings |
+| Uncertainty | Explicitly constrained by available evidence |
+
+## Portable architecture
+
+```text
+                    ┌─────────────────────┐
+                    │   Portable Agent    │
+                    │ identity + behavior  │
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              ↓                ↓                ↓
+          Diagnostic        Duties &         Explainability
+            Logic           Workflow           Contract
+              │
+              ↓
+        Runtime Adapters
+       ┌──────┬──────┬──────┬──────┐
+       ↓      ↓      ↓      ↓
+    OpenAI  CrewAI  Claude  Lyzr
+```
+
+The core diagnostic logic is kept separate from framework-specific adapters. This is the central design idea of the project, not four copies of the same agent wearing different hats.
+
+## Repository structure
+
+```text
+agent.yaml          # Portable identity and passport metadata
+SOUL.md             # Identity, principles, and behavior
+AGENTS.md           # Agent responsibilities
+DUTIES.md           # Maker / Checker workflow
+EXPLAINABILITY.md   # Decision, inputs, limits, and evidence contract
+core/               # Shared result model
+tools/              # Scanner and domain diagnostics
+skills/             # Declared capabilities
+workflows/          # Agent workflows
+adapters/           # Runtime-facing adapters
+tests/              # Deliberately diagnostic project fixtures
+```
+
+## Passport portability
+
+The agent is structured for the OpenGAP passport model and can be exported to:
+
+- OpenAI Agents SDK
+- CrewAI
+- Claude Code
+- Lyzr
+
+The important part is the **portable contract**: identity, behavior, duties, explainability, tools, and skills remain defined independently of a single runtime.
 
 ## Verification
 
-This repository includes:
-- OpenGAP passport metadata
-- code-quality fixture data
-- explainability and duty contracts
-- four framework adapters
-- automated verification
+The repository includes:
 
-OpenGAP validation passed and all four framework exports have been exercised successfully.
+- Local adapter verification
+- A domain-specific broken-project fixture
+- OpenGAP-compatible passport metadata
+- Explainability requirements
+- Export verification across the supported targets
 
-## Design principle
+The engineering workflow is:
 
-**Keep findings concrete.** CodeMedic reports the pattern it can actually see rather than claiming a broad quality score for the entire codebase.
+```text
+Validate passport
+    → Verify adapters
+    → Run diagnostic fixture
+    → Export with OpenGAP
+    → Inspect generated artifacts
+```
 
-## Medic family
+## Scope and limitations
 
-CodeMedic is a focused source-quality agent within a portable family designed around composable diagnostic responsibilities.
+CodeMedic is a focused diagnostic prototype. Its conclusions are limited to the evidence and rules implemented in this repository. It should complement, not replace, production-grade static analysis, security scanners, observability platforms, CI systems, or human review where appropriate.
+
+## Why this project exists
+
+This repository is one member of a deliberately modular **Medic agent family**. Each agent applies the same portable passport architecture to a different engineering failure surface.
+
+That makes the collection useful as an interoperability experiment:
+
+```text
+One passport architecture
+        +
+Different diagnostic domains
+        +
+Multiple agent runtimes
+        =
+Portable engineering-agent family
+```
+
+## Challenge context
+
+Built for the **HiDevs × Lyzr Agent Passport Challenge**, exploring portable agent identity, behavior contracts, explainability, verification, and framework interoperability.
+
+## Author
+
+**Jofil Joby**  
+[GitHub](https://github.com/Jofil-Joby)
