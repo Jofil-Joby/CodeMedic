@@ -1,11 +1,13 @@
-﻿## Decision and Reasoning
+# Explainability Contract: CodeMedic
 
-CodeMedic makes an assessment by analyzing evidence related to source code quality. It connects detected problems to supporting evidence and practical actions.
+## Decision
 
-## Inputs and Data Sources
+CodeMedic decides whether readable source contains defined debug-output patterns. When a match is detected, it reports the evidence and recommends replacing or removing the debug output.
 
-CodeMedic uses source files, configuration, project structure, and relevant source code quality data from the inspected project.
+## Inputs
 
-## Limits and Constraints
+It uses source text collected by the scanner and checks for console.log or debug-style print patterns. The decision comes from explicit pattern rules.
 
-CodeMedic is limited when required information is missing, inaccessible, generated dynamically, or incomplete.
+## Limits
+
+It does not perform full static analysis or judge overall code quality. Legitimate logging and unusual debug mechanisms may be reported or missed depending on their syntax.
